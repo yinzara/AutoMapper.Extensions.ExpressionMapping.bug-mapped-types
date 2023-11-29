@@ -23,6 +23,11 @@ public class EntityDefectTests
         _.CreateMap<DateOnly, Date>().ReverseMap();
         _.CreateMap<Date, Date2>().ReverseMap();
         _.CreateMap<Date, string>().ConvertUsing((d, _) => $"{d.Year:0000}-{d.Month:00}-{d.Day:00}");
+        _.CreateMap<string, Date>().ConvertUsing((d, _) =>
+        {
+            var dt = DateOnly.ParseExact(d, "yyyy-MM-dd");
+            return new(dt.Year, dt.Month, dt.Day);
+        });
 
     }).CreateMapper();
 
@@ -40,6 +45,15 @@ public class EntityDefectTests
         Expression<Func<PrimaryType, object?>> sourceExpression = _ => _.StringDateOnly;
         mapper.Map<Expression<Func<PrimaryType, object?>>,
             Expression<Func<PrimaryTypeDto, object?>>>(sourceExpression);
+    }
+
+
+    [Fact]
+    public void Map_String_ToDateOnly()
+    {
+        Expression<Func<PrimaryTypeDto, object?>> sourceExpression = _ => _.StringDateOnly;
+        mapper.Map<Expression<Func<PrimaryTypeDto, object?>>,
+            Expression<Func<PrimaryType, object?>>>(sourceExpression);
     }
 
     [Fact]
@@ -64,5 +78,13 @@ public class EntityDefectTests
         Expression<Func<PrimaryType, object?>> sourceExpression = _ => _.DateString;
         mapper.Map<Expression<Func<PrimaryType, object?>>,
             Expression<Func<PrimaryTypeDto, object?>>>(sourceExpression);
+    }
+
+    [Fact]
+    public void Map_String_ToDate()
+    {
+        Expression<Func<PrimaryTypeDto, object?>> sourceExpression = _ => _.DateString;
+        mapper.Map<Expression<Func<PrimaryTypeDto, object?>>,
+            Expression<Func<PrimaryType, object?>>>(sourceExpression);
     }
 }
